@@ -1,23 +1,26 @@
 name: Test pull Request changes
 
-on: 
+on:
   pull_request:
     branches: ["main"]
   push:
     branches: ["main"]
+
 jobs:
-  test: 
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Node.js environment
         uses: actions/setup-node@v4.0.0
-        with: 
+        with:
           node-version: '20.x'
-            
+
       - run: echo Hello from pull request
       - run: node --version
+
   go:
     runs-on: ubuntu-latest
     steps:
-      name: study
+      - name: Study
+        run: echo Hello from study
       - run: node --version
