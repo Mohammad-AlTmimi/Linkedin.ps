@@ -5,6 +5,7 @@ import logger from 'morgan';
 import cors from 'cors';
 import multer from 'multer';
 import fs from 'fs';
+import cookieParser from 'cookie-parser';
 
 import dataSource, { initDB } from './db/dataSource.js';
 
@@ -14,16 +15,32 @@ import jobsRouter from './routes/jobs.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { authenticate } from './middlewares/auth/authenticate.js';
+import baseLogger from './logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 var app = express();
 
-const PORT = 5000;
+if(process.env.NODE_ENV !== 'production'){
+  app.get('/only_developer' , (req , res) =>{
+    res.send("Only Developer can see me")
+  })
+}
 
+const PORT = 5000;
+const errorHandler = (
+  error: any , 
+  req: express.Request , 
+  res: express.Response , 
+  next: express.NextFunction) =>{
+    baseLogger.error("Error Message from Handler [Middle  Ware]");
+    baseLogger.error(error);
+    res.status(500).send("SomeThing Went Wrong !!??")
+  }
 app.use(cors({
-  origin: "http://localhost:3000"
+  origin: "http://localhost:3000", 
+  credentials:true
 }));
 
 const storage = multer.diskStorage({
@@ -39,12 +56,13 @@ const upload = multer({ storage });
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(logger('dev'));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/jobs', authenticate, jobsRouter);
-
+app.use(errorHandler);
 app.post('/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
     res.status(500).send("Failed Upload File!");
@@ -56,6 +74,8 @@ app.post('/upload', upload.single('file'), (req, res) => {
     file: fileURL
   });
 });
+
+
 
 app.get('/file', (req, res) => {
   const fileName = req.query.name?.toString() || '';
@@ -78,7 +98,7 @@ app.use((req, res, next) => {
 app.use((err: any, req: any, res: any, next: any) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = req.app.get('env') === 'development' ? err : err     ;
 
   // render the error page
   res.status(err.status || 500).send(err);

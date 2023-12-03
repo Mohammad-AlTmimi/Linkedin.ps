@@ -29,11 +29,13 @@
     "mysql": "^2.18.1",
     "typeorm": "^0.3.17",
     "typescript": "^5.2.2",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "winston": "^3.10.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.15",
     "@types/bcrypt": "^5.0.0",
+    "@types/cookie-parser": "^1.4.4",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.4",

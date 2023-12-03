@@ -6,12 +6,11 @@ import { authorize } from '../middlewares/auth/authorize.js';
 
 var router = express.Router();
 
-router.post('/', authorize('POST_users'), validateUser, (req, res, next) => {
+router.post('/', validateUser, (req, res, next) => {
   insertUser(req.body).then(() => {
     res.status(201).send()
   }).catch(err => {
-    console.error(err);
-    res.status(500).send(err);
+    next(err);
   });
 });
 
@@ -39,12 +38,25 @@ router.post('/login', (req, res) => {
 
   login(email, password)
     .then(data => {
+      res.cookie('fullName' , data.fullName , {
+        maxAge:  2 * 60 * 60 * 1000
+      })
+      res.cookie('loginTime' , Date.now() , {
+        maxAge:  2 * 60 * 60 * 1000
+      })
       res.send(data);
     })
     .catch(err => {
       res.status(401).send(err);
     })
 });
+
+router.post('/logout' , (req , res) =>{
+  res.cookie('token' , {maxAge: -1 , expire: Date.now() - 1})
+  res.cookie('loginTime' , {maxAge: -1 , expire: Date.now() - 1})
+  res.status(200).send("Go To Hell")
+  
+})
 
 router.get('/roles', authorize('GET_users/role'), authenticate, async (req, res, next) => {
   try {

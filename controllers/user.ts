@@ -11,7 +11,7 @@ import { Role } from "../db/entities/Role.js";
 import { Permission } from "../db/entities/Permission.js";
 
 const insertUser = (payload: NSUser.Item) => {
-  return dataSource.manager.transaction(async transaction => {
+  return dataSource.manager.transaction (async transaction => {
     const role = await Role.findOneBy({ name: payload.type });
     const newUser = User.create({
       ...payload,
@@ -56,7 +56,7 @@ const login = async (email: string, password: string) => {
         }
       );
 
-      return token;
+      return {token , fullName: user.fullName};
     } else {
       throw ("Invalid Username or password!");
     }
