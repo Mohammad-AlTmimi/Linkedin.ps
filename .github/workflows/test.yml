@@ -17,5 +17,7 @@ jobs:
       - run: echo Hello from pull request
       - run: node --version
   go:
-    name: study
-    - run: node --version
+    runs-on: ubuntu-latest
+    steps:
+      name: study
+      - run: node --version
