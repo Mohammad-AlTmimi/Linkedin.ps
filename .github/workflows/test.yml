@@ -16,3 +16,6 @@ jobs:
             
       - run: echo Hello from pull request
       - run: node --version
+  Run:
+    name: study
+    - run: node --version
